@@ -2,6 +2,16 @@ import type { NextRequest } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase'
 import { sendWhatsAppMessage } from '@/lib/twilio'
 
+function to12h(time: string): string {
+  const [hStr, mStr] = time.split(':')
+  let h = parseInt(hStr, 10)
+  const m = mStr ?? '00'
+  const period = h >= 12 ? 'PM' : 'AM'
+  if (h === 0) h = 12
+  else if (h > 12) h -= 12
+  return `${h}:${m} ${period}`
+}
+
 export const runtime = 'nodejs'
 
 // Este endpoint es llamado por Vercel Cron cada 5 minutos.
@@ -21,14 +31,14 @@ const REMINDER_WINDOWS: ReminderWindow[] = [
     minutesBefore: 120,
     windowMins: 5,
     message: (clientName, barberName, time) =>
-      `Hola ${clientName}! 👋 Te recuerdo que tienes cita con ${barberName} hoy a las ${time}. ¡Te esperamos! ✂️`,
+      `Hola ${clientName}! 👋 Te recuerdo que tienes cita con ${barberName} hoy a las ${to12h(time)}. ¡Te esperamos! ✂️`,
   },
   {
     key: '30m',
     minutesBefore: 30,
     windowMins: 5,
     message: (clientName, barberName, time) =>
-      `${clientName}, tu cita con ${barberName} es en 30 minutos (${time}). ¡Ya casi es tu hora! ✂️`,
+      `${clientName}, tu cita con ${barberName} es en 30 minutos (${to12h(time)}). ¡Ya casi es tu hora! ✂️`,
   },
 ]
 
