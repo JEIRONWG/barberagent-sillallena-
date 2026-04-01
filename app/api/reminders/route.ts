@@ -76,8 +76,8 @@ export async function GET(request: NextRequest): Promise<Response> {
     }
 
     for (const appt of appointments ?? []) {
-      const client = appt.clients as { name: string; phone: string } | null
-      const barber = appt.barbers as { name: string; phone: string } | null
+      const client = (Array.isArray(appt.clients) ? appt.clients[0] : appt.clients) as { name: string; phone: string } | null
+      const barber = (Array.isArray(appt.barbers) ? appt.barbers[0] : appt.barbers) as { name: string; phone: string } | null
 
       if (!client || !barber) continue
 
