@@ -248,6 +248,7 @@ export async function createAppointment(
   // Crear evento en Google Calendar si el barbero tiene tokens
   if (barber.google_tokens) {
     try {
+      console.log('[Calendar] Creating event for appointment:', appointment.id)
       const googleEventId = await createCalendarEvent(
         barber,
         {
@@ -258,14 +259,16 @@ export async function createAppointment(
         },
         bookingData.nombre_cliente
       )
+      console.log('[Calendar] Event created:', googleEventId)
       await supabaseAdmin
         .from('appointments')
         .update({ google_event_id: googleEventId })
         .eq('id', appointment.id)
     } catch (calendarError) {
-      // No bloquear la cita si falla Google Calendar
-      console.error('Google Calendar error (non-fatal):', calendarError)
+      console.error('[Calendar] Error creating event:', JSON.stringify(calendarError, Object.getOwnPropertyNames(calendarError)))
     }
+  } else {
+    console.warn('[Calendar] Barber has no google_tokens, skipping calendar event')
   }
 
   // Actualizar last_visit del cliente

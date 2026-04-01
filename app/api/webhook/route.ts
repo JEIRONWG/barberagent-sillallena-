@@ -49,7 +49,7 @@ export async function POST(request: NextRequest): Promise<Response> {
 
   if (barberError || !barber) {
     console.error('Barber not found for number:', whatsappNumber)
-    return new Response('OK', { status: 200 }) // Responder 200 para que Twilio no reintente
+    return new Response('<?xml version="1.0" encoding="UTF-8"?><Response></Response>', { status: 200, headers: { 'Content-Type': 'text/xml' } }) // Responder 200 para que Twilio no reintente
   }
 
   const barberData = barber as Barber
@@ -113,10 +113,10 @@ export async function POST(request: NextRequest): Promise<Response> {
     // ── 10. Enviar respuesta al cliente por WhatsApp ──────────
     await sendWhatsAppMessage(clientPhone, messageToClient)
 
-    return new Response('OK', { status: 200 })
+    return new Response('<?xml version="1.0" encoding="UTF-8"?><Response></Response>', { status: 200, headers: { 'Content-Type': 'text/xml' } })
   } catch (err) {
     console.error('Webhook error:', err)
     // Responder 200 para que Twilio no reintente indefinidamente
-    return new Response('OK', { status: 200 })
+    return new Response('<?xml version="1.0" encoding="UTF-8"?><Response></Response>', { status: 200, headers: { 'Content-Type': 'text/xml' } })
   }
 }
